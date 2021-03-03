@@ -1,28 +1,28 @@
 import { CompType } from "./GFCore";
 
-function gfEngineExtend() {
-    function extendFunction(target, funName:string, cb:Function) {
-        let func:Function = target[funName];
-        target[funName] = function() {
-            func.call(this, arguments)
-            cb && cb.call(this);
-        }
+function extendFunction(target, funName:string, cb:Function) {
+    let func:Function = target[funName];
+    target[funName] = function() {
+        func.call(this, arguments)
+        cb && cb.call(this);
     }
+}
 
-    function extendComponent (comp:typeof cc.Component, compType:CompType) {
-        extendFunction(comp.prototype, 'onEnable', function(){
-            if (!this.node._compBit) {
-                this.node._compBit = compType;
-            } else {
-                this.node._compBit |= compType;
-            }
-        });
-    
-        extendFunction(comp.prototype, 'onDisable', function(){
-            this.node._compBit &= ~compType;
-        });
-    }
-    
+function extendComponent (comp:typeof cc.Component, compType:CompType) {
+    extendFunction(comp.prototype, 'onEnable', function(){
+        if (!this.node._compBit) {
+            this.node._compBit = compType;
+        } else {
+            this.node._compBit |= compType;
+        }
+    });
+
+    extendFunction(comp.prototype, 'onDisable', function(){
+        this.node._compBit &= ~compType;
+    });
+}
+
+function gfEngineExtend() {
     extendComponent(cc.Sprite, CompType.Sprite);
     extendComponent(cc.Label, CompType.Label);
     extendComponent(cc.Button, CompType.Button);
