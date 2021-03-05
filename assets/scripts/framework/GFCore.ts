@@ -49,7 +49,7 @@ class ListenerList {
         Object.defineProperties(value, prop);
     }
 
-    addListenProp(o:{target:Object, name:string, set?:Function, get?:Function, value:Object, valueName?:string}) { // target, name:string, value, valueName:string, set?:Function, get?:Function
+    addListenProp(o:{target:Object, name:string, set?:Function, get?:Function, value:Object, valueName?:string}) {
 
         let target = o.target;
         let name = o.name;

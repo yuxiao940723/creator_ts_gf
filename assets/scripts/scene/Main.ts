@@ -21,9 +21,11 @@ export default class Main extends cc.Component {
         };
         gfCore.bindNode(this.node, data);
         this.scheduleOnce(()=>{
-            data.test.node.x = cc.winSize.width/2-50;
             data.test.label = 'yes';
         }, 3);
+        cc.tween(data.test.node)
+        .by(3, {x:-200})
+        .start();
     }
 
     // update (dt) {}
