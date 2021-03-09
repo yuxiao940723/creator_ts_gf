@@ -1,9 +1,10 @@
 
+const { ccclass } = cc._decorator;
+
 let FlagOfset = 0;
 
 export enum CompType {
     None = 0,
-    SelfNode = 1 << FlagOfset++,
     Sprite = 1 << FlagOfset++,
     Label = 1 << FlagOfset++,
     Button = 1 << FlagOfset++,
@@ -23,34 +24,108 @@ export enum CompType {
     Finnal = 1 << FlagOfset++,
 }
 
-class ListenerList {
-    _func = null;
-    _next:ListenerList = null; 
+@ccclass
+class GFListenComponent extends cc.Component {
 
-    doNothing() {}
+    onDestroy() {
+        
+    }
+
+    dealComponentBit(node:cc.Node, bindData) {
+        
+        let bit = this.node._compBit;
+
+        if (bit | CompType.Sprite) {
+            this.listenSprite(node, bindData);
+        }
+        if (bit | CompType.Label) {
+            this.listenLabel(node, bindData);
+        }
+
+        if (bit | CompType.Button) {
+            this.listenButton(node, bindData);
+        }
+
+        if (bit | CompType.Toggle) {
+            this.listenToggle(node, bindData);
+        }
+
+        if (bit | CompType.Mask) {
+            this.listenMask(node, bindData);
+        }
+
+        if (bit | CompType.ParticleSystem) {
+            this.listenParticleSystem(node, bindData);
+        }
+
+        if (bit | CompType.Spine) {
+            this.listenSpine(node, bindData);
+        }
+
+        if (bit | CompType.RichText) {
+            this.listenRichText(node, bindData);
+        }
+
+        if (bit | CompType.EditBox) {
+            this.listenEditBox(node, bindData);
+        }
+
+        if (bit | CompType.ScrollView) {
+            this.listenScrollView(node, bindData);
+        }
+
+        if (bit | CompType.PageView) {
+            this.listenPageView(node, bindData);
+        }
+
+        if (bit | CompType.Layout) {
+            this.listenLayout(node, bindData);
+        }
+
+        if (bit | CompType.Widget) {
+            this.listenWidget(node, bindData);
+        }
+
+        if (bit | CompType.Animation) {
+            this.listenAnimation(node, bindData);
+        }
+
+        if (bit | CompType.Camera) {
+            this.listenCamera(node, bindData);
+        }
+
+        if (bit | CompType.RigidBody) {
+            this.listenRigidBody(node, bindData);
+        }
+
+    }
 
     addListenAll(target, value, sets?:Function[], gets?:Function[]) {
+        let node = target.node || target;
         let prop = {};
         sets = sets || [];
         gets = gets || [];
         for (const name in value) {
             if (name in target) {
-                prop[name] = {
-                    get:sets[name] || function() {
-                        return target[name];
-                    },
-                    set:gets[name] || function(v) {
-                        target[name] = v;
+                if (typeof target[name] !== 'function') {
+                    prop[name] = {
+                        get:sets[name] || function() {
+                            return target[name];
+                        },
+                        set:gets[name] || function(v) {
+                            target[name] = v;
+                        }
                     }
+                    target[name] = value[name];
+                } else {
+                    node.on();
                 }
-                target[name] = value[name];
             }
         }
         Object.defineProperties(value, prop);
     }
 
     addListenProp(o:{target:Object, name:string, set?:Function, get?:Function, value:Object, valueName?:string}) {
-
         let target = o.target;
         let name = o.name;
         let value = o.value;
@@ -73,77 +148,108 @@ class ListenerList {
         Object.defineProperties(value, prop);
     }
 
+    removeListen(value) {
+        let prop = {};
+        for (const name in value) {
+            prop[name] = {
+                value:value[name],
+                writable:true
+            }
+        }
+        Object.defineProperties(value, prop);
+    }
+
     listenSprite(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        let labelData = bindData['label'];
+        if (labelData) {
+            
+        }
     }
 
     listenLabel(node:cc.Node, bindData) {
         let labelData = bindData['label'];
         if (labelData) {
             let label = node.getComponent(cc.Label);
-            if (typeof labelData === 'string') {
-                this.addListenProp({target:label, name:'string', value:bindData, valueName:'label'});
-            } else {
+            let type = typeof labelData;
+            if (type === 'string') {
+                this.addListenProp({target:label, name:'string', value:bindData, valueName:'label', set:(v)=>{
+                    if (typeof v === 'object') {
+                        if ('string' in v) {
+                            this.removeListen(bindData);
+                            bindData.label = v;
+                            this.addListenAll(label, v);
+                        } else {
+                            console.error(`translate to object in label must contain string`);
+                        }
+                    } else if (type === 'string') {
+                        label.string = v;
+                    } else {
+                        console.error(`unsupport type of ${type} in label`);
+                    }
+                }});
+            } else if (type === 'object') {
                 this.addListenAll(label, labelData);
+            } else {
+                console.error(`unsupport type of ${type} in label`);
             }
         }
-        this._next._func(node, bindData);
+        
     }
 
     listenButton(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenToggle(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenMask(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenParticleSystem(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenSpine(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenRichText(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenEditBox(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+       
     }
 
     listenScrollView(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenPageView(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenLayout(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenWidget(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+       
     }
 
     listenAnimation(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenCamera(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+       
     }
 
     listenRigidBody(node:cc.Node, bindData) {
-        this._next._func(node, bindData);
+        
     }
 
     listenSelfData(node:cc.Node, data, onlySelf) {
@@ -165,121 +271,58 @@ class ListenerList {
             let children = node.children;
             for (let i = 0, l = children.length; i < l; i++) {
                 let c = children[i];
-                getFuncList(c)._func(c, data);
+                let comp = c.getComponent(GFListenComponent);
+                if (!comp) {
+                    comp = c.addComponent(GFListenComponent);
+                }
+                comp.listenSelfData(c, data, onlySelf);
             }
         }
         if (bindData) {
-            this._next._func(node, bindData);
+            
         }
     }
+
 }
 
-let EmptyListenerList = new ListenerList();
-EmptyListenerList._func = EmptyListenerList.doNothing;
-EmptyListenerList._next = EmptyListenerList;
-
-function createFunc(flag, next) {
-    let listener = new ListenerList();
-    listener._next = next || EmptyListenerList;
-    switch (flag) {
-        case CompType.Sprite:
-            listener._func = listener.listenSprite;
-            break
-        case CompType.Label:
-            listener._func = listener.listenLabel;
-            break
-        case CompType.Button:
-            listener._func = listener.listenButton;
-            break
-        case CompType.Toggle:
-            listener._func = listener.listenToggle;
-            break
-        case CompType.Mask:
-            listener._func = listener.listenMask;
-            break
-        case CompType.ParticleSystem:
-            listener._func = listener.listenParticleSystem;
-            break
-        case CompType.Spine:
-            listener._func = listener.listenSpine;
-            break
-        case CompType.RichText:
-            listener._func = listener.listenRichText;
-            break
-        case CompType.EditBox:
-            listener._func = listener.listenEditBox;
-            break
-        case CompType.ScrollView:
-            listener._func = listener.listenScrollView;
-            break
-        case CompType.PageView:
-            listener._func = listener.listenPageView;
-            break
-        case CompType.Layout:
-            listener._func = listener.listenLayout;
-            break
-        case CompType.Widget:
-            listener._func = listener.listenWidget;
-            break
-        case CompType.Animation:
-            listener._func = listener.listenAnimation;
-            break
-        case CompType.Camera:
-            listener._func = listener.listenCamera;
-            break
-        case CompType.RigidBody:
-            listener._func = listener.listenRigidBody;
-            break
-        case CompType.None:
-            listener._func = listener.doNothing;
-            break
-        case CompType.SelfNode:
-            listener._func = listener.listenSelfData;
-    }
-    return listener;
-}
-
-
-function getFuncList(node) {
-    let flag = node._compBit || CompType.None;
-    flag |= CompType.SelfNode;
-    let funcList = funcLists[flag];
-    if (funcList) {
-        return funcList;
-    }
-    console.log(node.name, flag);
-    let nowFlag = CompType.Finnal;
-    while (nowFlag > 0) {
-        if (nowFlag & flag) {
-            funcList = createFunc(nowFlag, funcList);
-        }
-        nowFlag = nowFlag >> 1;
-    }
-    return funcList;
-}
-
-let funcLists = {};
 
 class GFCore  {
 
     static CompType = CompType;
 
     init() {
-        funcLists[0] = EmptyListenerList;
+        
     }
 
     addCommonData() {
 
     }
 
+    /**
+     * 绑定数据
+     * @param node 绑定数据的节点
+     * @param data 绑定的数据
+     */
     bindNode (node:cc.Node, data:Object) {
-        let list = getFuncList(node);
-        list._func(node, data);
+        let comp = node.getComponent(GFListenComponent);
+        if (!comp) {
+            comp = node.addComponent(GFListenComponent);
+        }
+        comp.listenSelfData(node, data, false);
     }
 
-    refreshNodeBind(node:cc.Node, data:Object, onlySelf:Boolean) {
-        let list = getFuncList(node);
-        list.listenSelfData(node, data, onlySelf);
+    /**
+     * 刷新数据
+     * @param node 刷新数据的节点
+     * @param data 刷新的数据
+     * @param onlySelf 是否只刷新自身字节，只刷新自身节点，不会传整个data，只需要传data里面节点的数据就可以了
+     */
+    refreshData(node:cc.Node, data:Object, onlySelf:boolean) {
+        let comp = node.getComponent(GFListenComponent);
+        if (!comp) {
+            comp = node.addComponent(GFListenComponent);
+        }
+        comp.listenSelfData(node, data, onlySelf);
     }
 
 }

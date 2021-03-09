@@ -21,11 +21,20 @@ export default class Main extends cc.Component {
         };
         gfCore.bindNode(this.node, data);
         this.scheduleOnce(()=>{
-            data.test.label = 'yes';
+            data.test.label = {string:'yes'};
         }, 3);
         cc.tween(data.test.node)
         .by(3, {x:-200})
         .start();
+
+        let o = {a:1};
+        Object.defineProperties(o, {a:{set:function(v){console.log("set o.a", v);}}});
+        console.log("o.a =", o.a);
+        o.a = 2;
+        console.log("o.a =", o.a);
+        Object.defineProperties(o, {a:{value:o.a, writable:true}});
+        o.a = 3;
+        console.log("o.a =", o.a);
     }
 
     // update (dt) {}
