@@ -24,11 +24,21 @@ export enum CompType {
     Finnal = 1 << FlagOfset++,
 }
 
+const BindDataKey = '__bindData__';
+
 @ccclass
 class GFListenComponent extends cc.Component {
 
     onDestroy() {
-        
+        if (this.node[BindDataKey]) {
+            this.node[BindDataKey] = null;
+        }
+        let components:cc.Component[] = this.node._components;
+        for (let i = 0, len = components.length; i < len; ++i) {
+            if (components[BindDataKey]) {
+                components[BindDataKey] = null;
+            }
+        }
     }
 
     dealComponentBit(node:cc.Node, bindData) {
@@ -36,75 +46,76 @@ class GFListenComponent extends cc.Component {
         let bit = this.node._compBit;
 
         if (bit | CompType.Sprite) {
-            this.listenSprite(node, bindData);
+            this.listenComponent('sprite', cc.Sprite, node, bindData)
         }
+
         if (bit | CompType.Label) {
             this.listenLabel(node, bindData);
         }
 
         if (bit | CompType.Button) {
-            this.listenButton(node, bindData);
+            this.listenComponent('button', cc.Button, node, bindData)
         }
 
         if (bit | CompType.Toggle) {
-            this.listenToggle(node, bindData);
+            this.listenComponent('toggle', cc.Toggle, node, bindData)
         }
 
         if (bit | CompType.Mask) {
-            this.listenMask(node, bindData);
+            this.listenComponent('mask', cc.Mask, node, bindData)
         }
 
         if (bit | CompType.ParticleSystem) {
-            this.listenParticleSystem(node, bindData);
+            this.listenComponent('particleSystem', cc.ParticleSystem, node, bindData)
         }
 
         if (bit | CompType.Spine) {
-            this.listenSpine(node, bindData);
+            this.listenComponent('spine', sp.Skeleton, node, bindData)
         }
 
         if (bit | CompType.RichText) {
-            this.listenRichText(node, bindData);
+            this.listenComponent('richText', cc.RichText, node, bindData)
         }
 
         if (bit | CompType.EditBox) {
-            this.listenEditBox(node, bindData);
+            this.listenComponent('editBox', cc.EditBox, node, bindData)
         }
 
         if (bit | CompType.ScrollView) {
-            this.listenScrollView(node, bindData);
+            this.listenComponent('scrollView', cc.ScrollView, node, bindData)
         }
 
         if (bit | CompType.PageView) {
-            this.listenPageView(node, bindData);
+            this.listenComponent('pageView', cc.PageView, node, bindData)
         }
 
         if (bit | CompType.Layout) {
-            this.listenLayout(node, bindData);
+            this.listenComponent('layout', cc.Layout, node, bindData)
         }
 
         if (bit | CompType.Widget) {
-            this.listenWidget(node, bindData);
+            this.listenComponent('widget', cc.Widget, node, bindData)
         }
 
         if (bit | CompType.Animation) {
-            this.listenAnimation(node, bindData);
+            this.listenComponent('animation', cc.Animation, node, bindData)
         }
 
         if (bit | CompType.Camera) {
-            this.listenCamera(node, bindData);
+            this.listenComponent('camera', cc.Camera, node, bindData)
         }
 
         if (bit | CompType.RigidBody) {
-            this.listenRigidBody(node, bindData);
+            this.listenComponent('rigidBody', cc.RigidBody, node, bindData)
         }
 
     }
 
-    addListenAll(target, value, sets?:Function[], gets?:Function[]) {
-        let node = target.node || target;
+    addListenAll(target:cc.Node|cc.Component, value, sets?:{}, gets?:{}) {
+        let node:cc.Node = target["node"] || target;
         let prop = {};
-        sets = sets || [];
-        gets = gets || [];
+        sets = sets || {};
+        gets = gets || {};
         for (const name in value) {
             if (name in target) {
                 if (typeof target[name] !== 'function') {
@@ -118,7 +129,7 @@ class GFListenComponent extends cc.Component {
                     }
                     target[name] = value[name];
                 } else {
-                    node.on();
+                    node.on(name, target[name], target);
                 }
             }
         }
@@ -134,7 +145,7 @@ class GFListenComponent extends cc.Component {
         let valueName = o.valueName || name;
         if (!(name in target )) {
             return ;
-        } 
+        }
         let prop = {};
         prop[valueName] = {
             get:get || function() {
@@ -159,112 +170,49 @@ class GFListenComponent extends cc.Component {
         Object.defineProperties(value, prop);
     }
 
-    listenSprite(node:cc.Node, bindData) {
-        let labelData = bindData['label'];
-        if (labelData) {
-            
-        }
-    }
-
     listenLabel(node:cc.Node, bindData) {
         let labelData = bindData['label'];
         if (labelData) {
             let label = node.getComponent(cc.Label);
             let type = typeof labelData;
             if (type === 'string') {
-                this.addListenProp({target:label, name:'string', value:bindData, valueName:'label', set:(v)=>{
-                    if (typeof v === 'object') {
-                        if ('string' in v) {
-                            this.removeListen(bindData);
-                            bindData.label = v;
-                            this.addListenAll(label, v);
-                        } else {
-                            console.error(`translate to object in label must contain string`);
-                        }
-                    } else if (type === 'string') {
-                        label.string = v;
-                    } else {
-                        console.error(`unsupport type of ${type} in label`);
-                    }
-                }});
+                this.addListenProp({target:label, name:'string', value:bindData, valueName:'label'});
             } else if (type === 'object') {
                 this.addListenAll(label, labelData);
             } else {
                 console.error(`unsupport type of ${type} in label`);
             }
         }
-        
     }
 
-    listenButton(node:cc.Node, bindData) {
-        
-    }
-
-    listenToggle(node:cc.Node, bindData) {
-        
-    }
-
-    listenMask(node:cc.Node, bindData) {
-        
-    }
-
-    listenParticleSystem(node:cc.Node, bindData) {
-        
-    }
-
-    listenSpine(node:cc.Node, bindData) {
-        
-    }
-
-    listenRichText(node:cc.Node, bindData) {
-        
-    }
-
-    listenEditBox(node:cc.Node, bindData) {
-       
-    }
-
-    listenScrollView(node:cc.Node, bindData) {
-        
-    }
-
-    listenPageView(node:cc.Node, bindData) {
-        
-    }
-
-    listenLayout(node:cc.Node, bindData) {
-        
-    }
-
-    listenWidget(node:cc.Node, bindData) {
-       
-    }
-
-    listenAnimation(node:cc.Node, bindData) {
-        
-    }
-
-    listenCamera(node:cc.Node, bindData) {
-       
-    }
-
-    listenRigidBody(node:cc.Node, bindData) {
-        
+    listenComponent(key:string, component:typeof cc.Component, node:cc.Node, bindData) {
+        let data = bindData[key]
+        if (data) {
+            let comp = node.getComponent(component);
+            comp[BindDataKey] = data;
+            this.addListenAll(comp, data);
+        }
     }
 
     listenSelfData(node:cc.Node, data, onlySelf) {
         let bindData = onlySelf ? data : data[node.name];
         if (bindData) {
+            let selfData = bindData.node;
+            if (selfData && typeof selfData === 'object') {
+                node[BindDataKey] = selfData;
+                this.addListenAll(node, selfData);
+            }
+            this.dealComponentBit(node, bindData);
             let custom = bindData.custom;
             if (custom && typeof custom === 'object') {
                 for (const comp in custom) {
-                    let component = node.getComponent(comp);
                     let d = custom[comp];
+                    let component = node.getComponent(comp);
+                    if (!component)
+                        continue;
+                    component[BindDataKey] = d;
+                    this.addListenAll(d, component);
                 }
-            }
-            let self = bindData.node;
-            if (self && typeof self === 'object') {
-                this.addListenAll(node, self);
             }
         }
         if (!onlySelf) {
@@ -277,9 +225,6 @@ class GFListenComponent extends cc.Component {
                 }
                 comp.listenSelfData(c, data, onlySelf);
             }
-        }
-        if (bindData) {
-            
         }
     }
 
@@ -303,7 +248,7 @@ class GFCore  {
      * @param node 绑定数据的节点
      * @param data 绑定的数据
      */
-    bindNode (node:cc.Node, data:Object) {
+    bindData (node:cc.Node, data:Object) {
         let comp = node.getComponent(GFListenComponent);
         if (!comp) {
             comp = node.addComponent(GFListenComponent);

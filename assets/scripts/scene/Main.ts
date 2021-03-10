@@ -17,11 +17,14 @@ export default class Main extends cc.Component {
                     y:100,
                 },
                 label:"hhh",
+                custom:{
+                    Main:10,
+                }
             },
         };
-        gfCore.bindNode(this.node, data);
+        gfCore.bindData(this.node, data);
         this.scheduleOnce(()=>{
-            data.test.label = {string:'yes'};
+            data.test.label = 'yes';
         }, 3);
         cc.tween(data.test.node)
         .by(3, {x:-200})

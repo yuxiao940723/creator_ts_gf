@@ -2,14 +2,16 @@ import { CompType } from "./GFCore";
 
 function extendFunction(target, funName:string, cb:Function) {
     let func:Function = target[funName];
-    target[funName] = function() {
-        func.call(this, arguments)
-        cb && cb.call(this);
+    if (typeof func === 'function') {
+        target[funName] = function() {
+            func.call(this, arguments)
+            cb && cb.call(this);
+        }
     }
 }
 
 function extendComponent (comp:typeof cc.Component, compType:CompType) {
-    extendFunction(comp.prototype, 'onEnable', function(){
+    extendFunction(comp.prototype, 'onLoad', function(){
         if (!this.node._compBit) {
             this.node._compBit = compType;
         } else {
@@ -17,7 +19,7 @@ function extendComponent (comp:typeof cc.Component, compType:CompType) {
         }
     });
 
-    extendFunction(comp.prototype, 'onDisable', function(){
+    extendFunction(comp.prototype, 'onDestroy', function(){
         this.node._compBit &= ~compType;
     });
 }
