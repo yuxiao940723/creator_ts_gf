@@ -1,5 +1,6 @@
 import ShaderBase from "../../shaders/base/ShaderBase";
 import gfCore from "../framework/GFCore";
+import { CompType } from "../framework/GFListener";
 
 const {ccclass, property} = cc._decorator;
 
@@ -14,6 +15,7 @@ export default class Main extends cc.Component {
     // onLoad () {}
 
     start () {
+        console.log("start", CompType[CompType.Label]);
         let data = {
             test: {
                 node:{

@@ -13,3 +13,16 @@ export function monkeyPatching(target, funName:string, cb:Function, createIfNotE
     }
 }
 
+export function merge(src, dst) {
+    for (const key in dst) {
+        let value = dst[key];
+        let type = typeof value;
+        if (type === 'object') {
+            let o = src[key] || {};
+            merge(o, value);
+        } else {
+            src[key] = value;
+        }
+    }
+}
+

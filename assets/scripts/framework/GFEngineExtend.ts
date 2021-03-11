@@ -1,5 +1,5 @@
 import { monkeyPatching } from "./Func";
-import { CompType } from "./GFCore";
+import { CompType } from "./GFListener";
 
 
 function extendComponent (comp:typeof cc.Component, compType:CompType) {
