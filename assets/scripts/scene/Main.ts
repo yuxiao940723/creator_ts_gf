@@ -1,9 +1,13 @@
+import ShaderBase from "../../shaders/base/ShaderBase";
 import gfCore from "../framework/GFCore";
 
 const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class Main extends cc.Component {
+
+
+    @property(ShaderBase) shaderBase:ShaderBase = null;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -38,6 +42,9 @@ export default class Main extends cc.Component {
         Object.defineProperties(o, {a:{value:o.a, writable:true}});
         o.a = 3;
         console.log("o.a =", o.a);
+        this.scheduleOnce(()=>{
+            this.shaderBase.applyStaticSpriteFrame();
+        }, 2);
     }
 
     // update (dt) {}

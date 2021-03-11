@@ -195,7 +195,6 @@ class GFListenComponent extends cc.Component {
     }
 
     listenSelfData(node:cc.Node, data, onlySelf) {
-        console.log('listenSelfData', this.node.name, node._compBit, CompType.Widget, CompType.Camera);
         let bindData = onlySelf ? data : data[node.name];
         if (bindData) {
             let selfData = bindData.node;
