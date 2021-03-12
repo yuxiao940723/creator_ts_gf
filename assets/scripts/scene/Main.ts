@@ -1,11 +1,13 @@
 import ShaderBase from "../../shaders/base/ShaderBase";
+import GFBindData from "../framework/GFBindData";
 import gfCore from "../framework/GFCore";
 import { CompType } from "../framework/GFListener";
+
 
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Main extends cc.Component {
+export default class Main extends GFBindData {
 
 
     @property(ShaderBase) shaderBase:ShaderBase = null;
@@ -14,8 +16,9 @@ export default class Main extends cc.Component {
 
     // onLoad () {}
 
+    
+
     start () {
-        console.log("start", CompType[CompType.Label]);
         let data = {
             test: {
                 node:{
@@ -28,7 +31,12 @@ export default class Main extends cc.Component {
                 }
             },
         };
-        gfCore.bindData(this.node, data);
+        this.setBindData(data);
+        let add = {
+            label:'string'
+        }
+        this.addBindData('test', add);
+        data.test.label = 'abc';
         this.scheduleOnce(()=>{
             data.test.label = 'yes';
         }, 3);
@@ -36,17 +44,6 @@ export default class Main extends cc.Component {
         .by(3, {x:-200})
         .start();
 
-        let o = {a:1};
-        Object.defineProperties(o, {a:{set:function(v){console.log("set o.a", v);}}});
-        console.log("o.a =", o.a);
-        o.a = 2;
-        console.log("o.a =", o.a);
-        Object.defineProperties(o, {a:{value:o.a, writable:true}});
-        o.a = 3;
-        console.log("o.a =", o.a);
-        this.scheduleOnce(()=>{
-            this.shaderBase.applyStaticSpriteFrame();
-        }, 2);
     }
 
     // update (dt) {}

@@ -31,7 +31,7 @@ export default class ShaderBase extends cc.Component {
         return StaticCamera;
     }
 
-    _getShaderName() {
+    private _getShaderName() {
         let idx1 = this.name.indexOf('<');
         let idx2 = this.name.indexOf('>');
         return this.name.substring(idx1+1, idx2);
@@ -85,7 +85,7 @@ export default class ShaderBase extends cc.Component {
         this.renderTexture && this.renderTexture.destroy();
     }
 
-    _overrideUpdateMaterial() {
+    private _overrideUpdateMaterial() {
         this.originalUpdateMaterial = this.renderComponent._updateMaterial;
         monkeyPatching(this.renderComponent, '_updateMaterial', ()=>{
             if (CC_EDITOR) {
@@ -103,7 +103,7 @@ export default class ShaderBase extends cc.Component {
         });
     }
 
-    _resetUpdateMaterial() {
+    private _resetUpdateMaterial() {
         if (this.originalUpdateMaterial) {
             this.renderComponent._updateMaterial = this.originalUpdateMaterial;
             this.originalUpdateMaterial = null;
@@ -114,7 +114,7 @@ export default class ShaderBase extends cc.Component {
         
     }
 
-    _updateStaticTexture() {
+    private _updateStaticTexture() {
         if (this.staticSpriteFrame) {
             return this.staticSpriteFrame;
         }
@@ -171,7 +171,7 @@ export default class ShaderBase extends cc.Component {
         this.staticCamera.node.setPosition(cameraPos);
     }
 
-    _renderStaticTexture(size) {
+    private _renderStaticTexture(size) {
         if (!this.renderTexture) {
             let gl = cc.game._renderContext;
             this.renderTexture = new cc.RenderTexture();
@@ -184,7 +184,7 @@ export default class ShaderBase extends cc.Component {
         this.renderTexture._image = this.renderTexture.readPixels();
     }
 
-    _resetMaterial() {
+    private _resetMaterial() {
         if (this.renderComponent instanceof cc.Sprite || this.renderComponent instanceof cc.Label) {
             let material = cc.Material.getBuiltinMaterial('2d-sprite');
             this.renderComponent.setMaterial(0, material);

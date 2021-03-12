@@ -1,5 +1,4 @@
 import { merge } from "./Func";
-import GFData from "./GFData"
 import GFListener from "./GFListener";
 
 class GFCore  {
@@ -24,11 +23,22 @@ class GFCore  {
      * @param data 绑定的数据
      */
     bindData (node:cc.Node, data:Object) {
-        let comp = node.getComponent(GFListener);
-        if (!comp) {
-            comp = node.addComponent(GFListener);
+        if (!node || typeof data !== 'object') {
+            return ;
         }
-        comp.listenSelfData(node, data, false);
+        let bindData = data[node.name] 
+        if (bindData) {
+            let comp = node.getComponent(GFListener);
+            if (!comp) {
+                comp = node.addComponent(GFListener);
+            }
+            comp.listenSelfData(bindData);
+        }
+        let children = node.children;
+        for (let i = 0, l = children.length; i < l; i++) {
+            let c = children[i];
+            this.bindData(c, data);
+        }
     }
 
     /**
@@ -37,25 +47,41 @@ class GFCore  {
      * @param data 刷新的数据
      * @param onlySelf 是否只刷新自身字节，只刷新自身节点，不会传整个data，只需要传data里面节点的数据就可以了
      */
-    refreshData(node:cc.Node, data:GFData, onlySelf:boolean) {
-        let comp = node.getComponent(GFListener);
-        if (!comp) {
-            comp = node.addComponent(GFListener);
+    refreshData(node:cc.Node, data:Object, onlySelf?:boolean) {
+        if (!node || typeof data !== 'object') {
+            return ;
         }
-        comp.listenSelfData(node, data, onlySelf);
+        let bindData = data[node.name];
+        if (onlySelf || bindData) {
+            let comp = node.getComponent(GFListener);
+            if (!comp) {
+                comp = node.addComponent(GFListener);
+            }
+            comp.listenSelfData(onlySelf ? data : bindData);
+        } 
+        if (!onlySelf) {
+            let children = node.children;
+            for (let i = 0, l = children.length; i < l; i++) {
+                let c = children[i];
+                this.refreshData(c, data, onlySelf);
+            }
+        }
     }
 
-    unbindData(node:cc.Node) {
+    unbindData(node:cc.Node, onlySelf?:boolean) {
+        if (!node) {
+            return ;
+        }
         let comp = node.getComponent(GFListener);
         comp && comp.destroy();
-        if (node.childrenCount > 0) {
+        if (!onlySelf && node.childrenCount > 0) {
             for (let i = 0; i < node.childrenCount; ++i) {
-                this.unbindData(node.children[i]);
+                this.unbindData(node.children[i], onlySelf);
             }
         }
     }
 
 }
 
-let gfCore = new GFCore();
+let gfCore = new GFCore;
 export default gfCore;

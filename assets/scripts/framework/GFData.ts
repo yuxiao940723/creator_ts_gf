@@ -71,7 +71,7 @@ interface GFRigidBodyData {
 export default interface GFData {
     node?:NodeData;
     sprite?:GFSpriteData;
-    label?:GFLabelData|String;
+    label?:GFLabelData|string;
     button?:GFButtonData;
     toggle?:GFToggleData;
     mask?:GFMaskData;
@@ -86,4 +86,5 @@ export default interface GFData {
     animation?:GFAnimationData;
     camera?:GFCameraData;
     rigidBody?:GFRigidBodyData;
+    custom?:Object;
 }

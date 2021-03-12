@@ -122,7 +122,7 @@ export default class GFListener extends cc.Component {
         Object.defineProperties(value, prop);
     }
 
-    listenLabel(node:cc.Node, bindData) {
+    listenLabel(node:cc.Node, bindData:GFData) {
         let labelData = bindData['label'];
         if (labelData) {
             let label = node.getComponent(cc.Label);
@@ -146,36 +146,29 @@ export default class GFListener extends cc.Component {
         }
     }
 
-    listenSelfData(node:cc.Node, data:Object, onlySelf) {
-        let bindData = onlySelf ? data : data[node.name];
+    listenSelfData(bindData:GFData) {
         if (bindData) {
+            let oldData = this.node[BindDataKey];
+            if (oldData) {
+                // todo
+                console.error('需要移除绑定的旧数据');
+            }
             let selfData = bindData.node;
             if (selfData && typeof selfData === 'object') {
-                node[BindDataKey] = selfData;
-                this.addListenAll(node, selfData);
+                this.node[BindDataKey] = selfData;
+                this.addListenAll(this.node, selfData);
             }
-            this.dealComponentBit(node, bindData);
+            this.dealComponentBit(this.node, bindData);
             let custom = bindData.custom;
             if (custom && typeof custom === 'object') {
                 for (const comp in custom) {
                     let d = custom[comp];
-                    let component = node.getComponent(comp);
+                    let component = this.node.getComponent(comp);
                     if (!component)
                         continue;
                     component[BindDataKey] = d;
                     this.addListenAll(d, component);
                 }
-            }
-        }
-        if (!onlySelf) {
-            let children = node.children;
-            for (let i = 0, l = children.length; i < l; i++) {
-                let c = children[i];
-                let comp = c.getComponent(GFListener);
-                if (!comp) {
-                    comp = c.addComponent(GFListener);
-                }
-                comp.listenSelfData(c, data, onlySelf);
             }
         }
     }
