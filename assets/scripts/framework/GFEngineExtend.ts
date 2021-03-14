@@ -1,25 +1,19 @@
-import { CompType } from "./GFCore";
+import { monkeyPatching } from "./Func";
+import { CompType } from "./GFListener";
 
-function extendFunction(target, funName:string, cb:Function) {
-    let func:Function = target[funName];
-    target[funName] = function() {
-        func.call(this, arguments)
-        cb && cb.call(this);
-    }
-}
 
 function extendComponent (comp:typeof cc.Component, compType:CompType) {
-    extendFunction(comp.prototype, 'onEnable', function(){
+    monkeyPatching(comp.prototype, 'onLoad', function(){
         if (!this.node._compBit) {
             this.node._compBit = compType;
         } else {
             this.node._compBit |= compType;
         }
-    });
+    }, true);
 
-    extendFunction(comp.prototype, 'onDisable', function(){
+    monkeyPatching(comp.prototype, 'onDestroy', function(){
         this.node._compBit &= ~compType;
-    });
+    }, true);
 }
 
 function gfEngineExtend() {
