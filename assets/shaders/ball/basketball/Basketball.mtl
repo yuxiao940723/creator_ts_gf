@@ -1,0 +1,17 @@
+{
+  "__type__": "cc.Material",
+  "_name": "Basketball",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "74e6b89f-2a5c-4421-b617-42ace974aa75"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}

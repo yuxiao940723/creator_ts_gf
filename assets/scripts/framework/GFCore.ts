@@ -52,18 +52,18 @@ class GFCore  {
             return ;
         }
         let bindData = data[node.name];
-        if (onlySelf || bindData) {
+        if (bindData) {
             let comp = node.getComponent(GFListener);
             if (!comp) {
                 comp = node.addComponent(GFListener);
             }
-            comp.listenSelfData(onlySelf ? data : bindData);
+            comp.listenSelfData(bindData);
         } 
         if (!onlySelf) {
             let children = node.children;
             for (let i = 0, l = children.length; i < l; i++) {
                 let c = children[i];
-                this.refreshData(c, data, onlySelf);
+                this.refreshData(c, data, false);
             }
         }
     }

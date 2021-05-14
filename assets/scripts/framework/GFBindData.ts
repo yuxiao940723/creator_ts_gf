@@ -1,3 +1,4 @@
+import { merge } from "./Func";
 import gfCore from "./GFCore";
 import GFData from "./GFData";
 
@@ -33,7 +34,7 @@ export default class GFBindData extends cc.Component {
      * @param bindData 绑定数据
      * @returns 是否绑定成功
      */
-    addBindData(path:string, bindData:GFData) {
+    addBindData(bindData:GFData, path:string) {
         if (typeof bindData !== 'object') {
             return false;
         }
@@ -42,8 +43,8 @@ export default class GFBindData extends cc.Component {
             cc.error('can not find path :', path);
             return false;
         }
-        this.data[node.name] = bindData;
-        gfCore.refreshData(node, bindData, true);
+        merge(this.data[node.name], bindData);
+        gfCore.refreshData(node, this.data, true);
         return true;
     }
 

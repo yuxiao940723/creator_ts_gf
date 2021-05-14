@@ -26,19 +26,36 @@ export enum CompType {
 }
 
 
-const BindDataKey = '__bindData__';
+let KeyId = 0;
 
 @ccclass
 export default class GFListener extends cc.Component {
 
+    key:string = "";
+
+    getBindDataKey() {
+        if (!this.key) {
+            this.key = '__bindData__' + KeyId.toString();
+            KeyId ++;
+        }
+        return this.key;
+    }
+
     onDestroy() {
-        if (this.node[BindDataKey]) {
-            this.node[BindDataKey] = null;
+        this.removeAllListen();
+    }
+
+    removeAllListen() {
+        let bindDataKey = this.getBindDataKey(); 
+        if (this.node[bindDataKey]) {
+            this.removeListen(this.node[bindDataKey]);
+            this.node[bindDataKey] = null;
         }
         let components:cc.Component[] = this.node._components;
         for (let i = 0, len = components.length; i < len; ++i) {
-            if (components[BindDataKey]) {
-                components[BindDataKey] = null;
+            if (components[bindDataKey]) {
+                this.removeListen(components[bindDataKey]);
+                components[bindDataKey] = null;
             }
         }
     }
@@ -64,7 +81,7 @@ export default class GFListener extends cc.Component {
     }
 
     addListenAll(target:cc.Node|cc.Component, value, sets?:{}, gets?:{}) {
-        let node:cc.Node = target["node"] || target;
+        console.log("add listen", value);
         let prop = {};
         sets = sets || {};
         gets = gets || {};
@@ -80,8 +97,8 @@ export default class GFListener extends cc.Component {
                         }
                     }
                     target[name] = value[name];
-                } else {
-                    node.on(name, target[name], target);
+                } else if (typeof value[name] === 'function') {
+                    this.node.on(name, value[name], value);
                 }
             }
         }
@@ -114,9 +131,13 @@ export default class GFListener extends cc.Component {
     removeListen(value) {
         let prop = {};
         for (const name in value) {
-            prop[name] = {
-                value:value[name],
-                writable:true
+            if (typeof value[name] === 'function') {
+                this.node.off(name, value[name], value);
+            } else {
+                prop[name] = {
+                    value:value[name],
+                    writable:true
+                }
             }
         }
         Object.defineProperties(value, prop);
@@ -141,21 +162,21 @@ export default class GFListener extends cc.Component {
         let data = bindData[key]
         if (data) {
             let comp = node.getComponent(component);
-            comp[BindDataKey] = data;
+            comp[this.getBindDataKey()] = data;
             this.addListenAll(comp, data);
         }
     }
 
     listenSelfData(bindData:GFData) {
         if (bindData) {
-            let oldData = this.node[BindDataKey];
-            if (oldData) {
-                // todo
-                console.error('需要移除绑定的旧数据');
+            let bindDataKey = this.getBindDataKey();
+            let oldData = this.node[bindDataKey];
+            if (oldData != bindData) {
+                this.removeAllListen();
             }
             let selfData = bindData.node;
             if (selfData && typeof selfData === 'object') {
-                this.node[BindDataKey] = selfData;
+                this.node[bindDataKey] = selfData;
                 this.addListenAll(this.node, selfData);
             }
             this.dealComponentBit(this.node, bindData);
@@ -166,7 +187,7 @@ export default class GFListener extends cc.Component {
                     let component = this.node.getComponent(comp);
                     if (!component)
                         continue;
-                    component[BindDataKey] = d;
+                    component[bindDataKey] = d;
                     this.addListenAll(d, component);
                 }
             }

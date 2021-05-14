@@ -21,6 +21,8 @@ export default class ShaderBase extends cc.Component {
     oldSpriteFrame:cc.SpriteFrame = null;
     renderTexture:cc.RenderTexture = null;
 
+    path:string = "";
+
     get staticCamera() {
         if (!StaticCamera) {
             let cameraNode = new cc.Node('Shader Camera');
@@ -39,11 +41,11 @@ export default class ShaderBase extends cc.Component {
 
     resetInEditor() {
         let filename = this._getShaderName();
-        let url = `db://assets/shaders/${filename.toLowerCase()}/${filename}.mtl`;
+        let url = `db://assets/shaders/${this.path+filename.toLowerCase()}/${filename}.mtl`;
         let uuid = Editor.assetdb.remote.urlToUuid(url);
         cc.assetManager.loadAny({uuid: uuid}, {type:cc.Material}, (err, material:cc.Material)=>{
             if (err) {
-                cc.error(material);
+                cc.error("material error", err);
                 return ;
             }
             if (!cc.isValid(this)) {
@@ -64,6 +66,8 @@ export default class ShaderBase extends cc.Component {
         }
         this._overrideUpdateMaterial();
     }
+
+    start(){}
 
     applyStaticSpriteFrame() {
         if (!(this.renderComponent instanceof cc.Sprite)) {
@@ -195,10 +199,6 @@ export default class ShaderBase extends cc.Component {
             cc.error('请覆盖 resetMaterial 函数，并将material设置为内建材质');
             return;
         }
-    }
-
-    onFocusInEditor() {
-
     }
 
 
