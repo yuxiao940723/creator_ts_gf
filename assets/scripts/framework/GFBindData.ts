@@ -65,7 +65,7 @@ export default class GFBindData extends cc.Component {
     }
 
     /**
-     * 子类重新此方法，需要调用super.onDestroy();s
+     * 子类重新此方法，需要调用super.onDestroy();
      */
     onDestroy() {
         this.deleteBindData();

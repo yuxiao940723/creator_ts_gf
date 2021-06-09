@@ -1,10 +1,12 @@
 import GFBindData from "../framework/GFBindData";
+import TaskDispatcher from "../framework/TaskDispatcher";
 
 const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class Main extends GFBindData {
 
+    // @property a = 0;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -15,7 +17,17 @@ export default class Main extends GFBindData {
     //写字过河
 
     start () {
-        
+        console.log("start");
+        this.test();
+    }
+
+    async test() {
+    //     for (let i = 0; i < 100000; ++i) {
+    //         TaskDispatcher.dispatch(()=>{
+    //             console.log(cc.director.getTotalFrames());
+    //             return i+i;
+    //         });
+    //    }
     }
 
     // update() {
