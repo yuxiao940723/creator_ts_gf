@@ -16,18 +16,7 @@ export default class Main extends GFBindData {
     //按顺序亮灯，然后让玩家重复
     //写字过河
 
-    start () {
-        console.log("start");
-        this.test();
-    }
-
-    async test() {
-    //     for (let i = 0; i < 100000; ++i) {
-    //         TaskDispatcher.dispatch(()=>{
-    //             console.log(cc.director.getTotalFrames());
-    //             return i+i;
-    //         });
-    //    }
+    onLoad() {
     }
 
     // update() {

@@ -5,7 +5,7 @@ interface Task {
     resolve:Function,
 }
 
-const OtherProgressSpent = 2;           //留给除cocos的mainloop外其他进程的时间
+const OtherProgressSpent = 2;           //留给除cocos外的mainloop外其他js任务的执行的时间
 
 class TaskDispatcher {
 
@@ -54,7 +54,8 @@ class TaskDispatcher {
             }
         });
     }
-
 }
+
+
 
 export default new TaskDispatcher();
